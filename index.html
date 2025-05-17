@@ -5,15 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UWON Vocabulary Test</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #3AC7A4, #2D9C8B);
-      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .background-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      z-index: -1;
+      background: linear-gradient(135deg, #3AC7A4, #2D9C8B);
+    }
+
+    .scroll-container {
+      position: relative;
+      height: 100%;
+      overflow-y: auto;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 2rem;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
     }
 
     .container {
@@ -81,75 +103,99 @@
       margin-bottom: 1rem;
       color: #444;
     }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+
+      button, input {
+        font-size: 1rem;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+    }
+
+       /* 原有样式 ... */
+
+    .table-container {
+      overflow-x: auto;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1> UWON Vocabulary Test - Lesson 20</h1>
-    <div id="timer">⏱ Time Elapsed: 0 sec</div>
+  <div class="background-fixed"></div>
+  <div class="scroll-container">
+    <div class="container">
+      <h1>UWON Vocabulary Test - Lesson 20</h1>
+      <div id="timer">⏱ Time Elapsed: 0 sec</div>
 
-    <div id="testSection">
-      <p id="instructions">🎧 Round 1: Click "Play" to hear the word</p>
-      <button id="playBtn">🔊 Play Word</button><br />
-      <p id="chineseHint" class="hidden">Meaning: <span></span></p>
-      <input type="text" id="answer" placeholder="Enter your answer" />
-      <button id="checkBtn">✔️ Check</button>
-      <div id="result"></div>
-      <button id="nextBtn" class="hidden">➡️ Next</button>
-      <p id="progress"></p>
-    </div>
+      <div id="testSection">
+        <p id="instructions">🎧 Round 1: Click "Play" to hear the word</p>
+        <button id="playBtn">🔊 Play Word</button><br />
+        <p id="chineseHint" class="hidden">Meaning: <span></span></p>
+        <input type="text" id="answer" placeholder="Enter your answer" />
+        <button id="checkBtn">✔️ Check</button>
+        <div id="result"></div>
+        <button id="nextBtn" class="hidden">➡️ Next</button>
+        <p id="progress"></p>
+      </div>
 
-    <div id="reportSection" class="hidden section">
-      <h2>📊 Test Report</h2>
-      <p id="scoreSummary"></p>
-      <p id="timeSummary"></p>
-      <div id="errorList"></div>
-      <button onclick="location.reload()">🔁 Restart</button>
+      <div id="reportSection" class="hidden section">
+        <h2>📊 Test Report</h2>
+        <p id="scoreSummary"></p>
+        <p id="timeSummary"></p>
+        <div id="errorList"></div>
+        <button onclick="location.reload()">🔁 Restart</button>
+      </div>
     </div>
   </div>
 
   <script>
     const wordList = [
-  { word: "precaution", meaning: "n. 预防措施" },
-  { word: "precede", meaning: "v. 在...之前" },
-  { word: "precious", meaning: "adj. 宝贵的，珍贵的" },
-  { word: "precise", meaning: "adj. 精确的，准确的" },
-  { word: "predict", meaning: "v. 预测，预言" },
-  { word: "preface", meaning: "n. 序言；v. 作序" },
-  { word: "prejudice", meaning: "n. 偏见；v. 使有偏见" },
-  { word: "preliminary", meaning: "adj. 初步的；n. 初步行动" },
-  { word: "prescribe", meaning: "v. 开药方，规定" },
-  { word: "presently", meaning: "adv. 不久，当前" },
-  { word: "preserve", meaning: "v. 保存，保护" },
-  { word: "press", meaning: "v. 按，压；n. 新闻界" },
-  { word: "prevail", meaning: "v. 盛行，占优势" },
-  { word: "previous", meaning: "adj. 以前的，先前的" },
-  { word: "primary", meaning: "adj. 主要的，初级的" },
-  { word: "prime", meaning: "adj. 首要的；n. 全盛时期" },
-  { word: "primitive", meaning: "adj. 原始的；n. 原始人" },
-  { word: "principal", meaning: "adj. 主要的；n. 校长" },
-  { word: "principle", meaning: "n. 原则，原理" },
-  { word: "prior", meaning: "adj. 在先的，优先的" },
-  { word: "privilege", meaning: "n. 特权；v. 给予特权" },
-  { word: "procedure", meaning: "n. 程序，步骤" },
-  { word: "proceed", meaning: "v. 继续进行，前进" },
-  { word: "professional", meaning: "adj. 专业的；n. 专业人士" },
-  { word: "profit", meaning: "n. 利润；v. 获利" },
-  { word: "prohibit", meaning: "v. 禁止，阻止" },
-  { word: "project", meaning: "n. 项目；v. 投射，计划" },
-  { word: "prominent", meaning: "adj. 突出的，著名的" },
-  { word: "promise", meaning: "n./v. 承诺，允诺" },
-  { word: "promote", meaning: "v. 促进，晋升" },
-  { word: "prompt", meaning: "adj. 迅速的；v. 促使" },
-  { word: "proof", meaning: "n. 证据；adj. 防...的" },
-  { word: "property", meaning: "n. 财产，特性" },
-  { word: "proportion", meaning: "n. 比例，部分" },
-  { word: "propose", meaning: "v. 提议，求婚" },
-  { word: "prospect", meaning: "n. 前景，可能性" },
-  { word: "prosperity", meaning: "n. 繁荣，兴旺" },
-  { word: "protest", meaning: "v./n. 抗议，反对" },
-  { word: "provided", meaning: "conj. 如果，假如" },
-  { word: "provision", meaning: "n. 供应，条款" }
+        { word: "precaution", meaning: "n. 预防措施" },
+        { word: "precede", meaning: "v. 在...之前" },
+        { word: "precious", meaning: "adj. 宝贵的，珍贵的" },
+        { word: "precise", meaning: "adj. 精确的，准确的" },
+        { word: "predict", meaning: "v. 预测，预言" },
+        { word: "preface", meaning: "n. 序言；v. 作序" },
+        { word: "prejudice", meaning: "n. 偏见；v. 使有偏见" },
+        { word: "preliminary", meaning: "adj. 初步的；n. 初步行动" },
+        { word: "prescribe", meaning: "v. 开药方，规定" },
+        { word: "presently", meaning: "adv. 不久，当前" },
+        { word: "preserve", meaning: "v. 保存，保护" },
+        { word: "press", meaning: "v. 按，压；n. 新闻界" },
+        { word: "prevail", meaning: "v. 盛行，占优势" },
+        { word: "previous", meaning: "adj. 以前的，先前的" },
+        { word: "primary", meaning: "adj. 主要的，初级的" },
+        { word: "prime", meaning: "adj. 首要的；n. 全盛时期" },
+        { word: "primitive", meaning: "adj. 原始的；n. 原始人" },
+        { word: "principal", meaning: "adj. 主要的；n. 校长" },
+        { word: "principle", meaning: "n. 原则，原理" },
+        { word: "prior", meaning: "adj. 在先的，优先的" },
+        { word: "privilege", meaning: "n. 特权；v. 给予特权" },
+        { word: "procedure", meaning: "n. 程序，步骤" },
+        { word: "proceed", meaning: "v. 继续进行，前进" },
+        { word: "professional", meaning: "adj. 专业的；n. 专业人士" },
+        { word: "profit", meaning: "n. 利润；v. 获利" },
+        { word: "prohibit", meaning: "v. 禁止，阻止" },
+        { word: "project", meaning: "n. 项目；v. 投射，计划" },
+        { word: "prominent", meaning: "adj. 突出的，著名的" },
+        { word: "promise", meaning: "n./v. 承诺，允诺" },
+        { word: "promote", meaning: "v. 促进，晋升" },
+        { word: "prompt", meaning: "adj. 迅速的；v. 促使" },
+        { word: "proof", meaning: "n. 证据；adj. 防...的" },
+        { word: "property", meaning: "n. 财产，特性" },
+        { word: "proportion", meaning: "n. 比例，部分" },
+        { word: "propose", meaning: "v. 提议，求婚" },
+        { word: "prospect", meaning: "n. 前景，可能性" },
+        { word: "prosperity", meaning: "n. 繁荣，兴旺" },
+        { word: "protest", meaning: "v./n. 抗议，反对" },
+        { word: "provided", meaning: "conj. 如果，假如" },
+        { word: "provision", meaning: "n. 供应，条款" }
     ];
 
     let currentIndex = 0;
@@ -157,6 +203,8 @@
     let currentWord = {};
     const errorsRound1 = [];
     const errorsRound2 = [];
+    let correctRound1 = 0;
+    let correctRound2 = 0;
 
     const playBtn = document.getElementById("playBtn");
     const checkBtn = document.getElementById("checkBtn");
@@ -172,14 +220,12 @@
     const timeSummary = document.getElementById("timeSummary");
     const timerDisplay = document.getElementById("timer");
 
-    let total = wordList.length * 2;
-    let correct = 0;
     let selectedVoice = null;
-
     let startTime = Date.now();
     let round1Start = Date.now();
     let round1Time = 0;
     let round2Time = 0;
+
     let timerInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       timerDisplay.textContent = `⏱ Time Elapsed: ${Math.floor(elapsed / 1000)} sec`;
@@ -224,12 +270,7 @@
       if (currentRound === 1) {
         instructions.textContent = "🎧 Round 1: Click \"Play\" to hear the word";
         chineseHint.classList.add("hidden");
-
-        // ✅ 自动播放当前单词
-        if (!selectedVoice) loadVoicesAndSetVoice();
-        setTimeout(() => {
-          speakWord(currentWord.word);
-        }, 200);
+        setTimeout(() => speakWord(currentWord.word), 200);
       } else {
         instructions.textContent = "💡 Round 2: Type the correct English word";
         chineseHint.classList.remove("hidden");
@@ -249,7 +290,8 @@
       if (userAnswer === correctAnswer) {
         resultDiv.textContent = "✅ Correct!";
         resultDiv.className = "correct";
-        correct++;
+        if (currentRound === 1) correctRound1++;
+        else correctRound2++;
       } else {
         resultDiv.textContent = `❌ Incorrect. The correct answer is: ${currentWord.word}`;
         resultDiv.className = "wrong";
@@ -286,7 +328,14 @@
     function showReport() {
       document.getElementById("testSection").classList.add("hidden");
       reportSection.classList.remove("hidden");
-      scoreSummary.textContent = `🎉 Test completed! Correct: ${correct} / ${total}`;
+
+      const totalPerRound = wordList.length;
+      scoreSummary.innerHTML = `
+        ✅ Listening Test (Round 1): ${correctRound1} / ${totalPerRound}<br>
+        ✅ Meaning Test (Round 2): ${correctRound2} / ${totalPerRound}<br>
+        🎯 Total: ${correctRound1 + correctRound2} / ${totalPerRound * 2}
+      `;
+
       timeSummary.innerHTML = `
         🕒 Round 1 Time: ${Math.floor(round1Time / 1000)} seconds<br>
         🕒 Round 2 Time: ${Math.floor(round2Time / 1000)} seconds
@@ -295,12 +344,30 @@
       let html = "";
 
       if (errorsRound1.length > 0) {
-        html += `<h3>Round 1 - Listening Errors</h3><table><thead><tr><th>Word</th><th>Your Answer</th><th>Correct</th><th>Meaning</th></tr></thead><tbody>`;
+        html += `<h3>Round 1 - Listening Errors</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Word</th>
+                <th>Your Answer</th>
+                <th>Correct</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>`;
+        
         errorsRound1.forEach(item => {
-          html += `<tr><td>${item.word}</td><td class="wrong">${item.yourAnswer}</td><td>${item.word}</td><td>${item.meaning}</td></tr>`;
+          html += `<tr>
+            <td>${item.word}</td>
+            <td class="wrong">${item.yourAnswer}</td>
+            <td>${item.word}</td>
+            <td>${item.meaning}</td>
+          </tr>`;
         });
-        html += `</tbody></table>`;
-      }
+
+        html += `</tbody></table></div>`;
+            }
 
       if (errorsRound2.length > 0) {
         html += `<h3>Round 2 - Meaning Errors</h3><table><thead><tr><th>Word</th><th>Your Answer</th><th>Correct</th><th>Meaning</th></tr></thead><tbody>`;
